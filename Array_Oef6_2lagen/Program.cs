@@ -56,26 +56,44 @@ namespace Array_Oef6_2lagen
                     // Als 1: maak array's 
                     if (keuze == 1)
                     {
-                        // vraag de grootte van de klas 
-                        Console.Write("\n\nhoe groot is uw klas: ");
-                        int grootte = int.Parse(Console.ReadLine());
+                        bool herhalen1 = true;
+                        do
+                        {
+                            try
+                            {
+                                // vraag de grootte van de klas 
+                                Console.Write("\nhoe groot is uw klas: ");
+                                int grootte = int.Parse(Console.ReadLine());
 
-                        // stuur de grootte door
-                        GrootteArrayAanpassen(grootte);
+                                // stuur de grootte door
+                                GrootteArrayAanpassen(grootte);
 
 
-                        // Scherm leegmaken 
-                        Console.Clear();
+                                // Scherm leegmaken 
+                                Console.Clear();
 
-                        // bevestig
-                        Console.WriteLine(StandaardAntwoorden(10));
-                        Console.WriteLine(StandaardAntwoorden(0));
-                        Console.ReadKey();
+                                // bevestig
+                                Console.WriteLine(StandaardAntwoorden(10));
+                                Console.WriteLine(StandaardAntwoorden(0));
+                                Console.ReadKey();
+
+                                herhalen1 = false;
+                            }
+                            catch
+                            {
+                                Console.WriteLine(StandaardAntwoorden(1));
+                                Console.WriteLine(StandaardAntwoorden(0));
+                                Console.ReadKey();
+                            }
+                            
+                        }
+                        while (herhalen1);
+                        
 
                     }
 
                     // Als 2: Leerling ingeven
-                    else if (keuze == 2)
+                    else if (keuze == 2 && ArrayAangemaakt())
                     {
                         // Zoek een lege plaats
                         int plaats = ZoekLegePlaats();
@@ -112,7 +130,7 @@ namespace Array_Oef6_2lagen
                         Console.WriteLine();
 
                         // Vraag het nummer van het mosnter
-                        Console.Write("Geef het nummer van het monster dat u wilt aanpassen: ");
+                        Console.Write("Geef het nummer van de leerling die u wilt aanpassen: ");
                         int nummer = (int.Parse(Console.ReadLine()) - 1);
 
                         // Vraag de gegevens van het monster
@@ -124,7 +142,7 @@ namespace Array_Oef6_2lagen
                         // Scherm leegmaken 
                         Console.Clear();
 
-                        // fout code 
+                        // begeleiden gebruiker  
                         Console.WriteLine(StandaardAntwoorden(8));
                         Console.WriteLine(StandaardAntwoorden(0));
                         Console.ReadKey();
@@ -137,8 +155,8 @@ namespace Array_Oef6_2lagen
                         Console.WriteLine(ToonLeerlingen());
                         Console.WriteLine();
 
-                        // Vraag het nummer van het mosnter
-                        Console.Write("Geef het nummer van het monster dat u wilt verwijderen: ");
+                        // Vraag het nummer van de leerling
+                        Console.Write("Geef het nummer van de leerlingen die u wilt verwijderen: ");
                         int nummer = (int.Parse(Console.ReadLine()) - 1);
 
                         LeerlingOpslaan(null, nummer);
@@ -169,14 +187,16 @@ namespace Array_Oef6_2lagen
                             // Scherm leegmaken 
                             Console.Clear();
 
+                            //willekeurige lln tonen
                             if (keuze == 1)
                             {
                                 int willekeurigeLln = KiesWillekeurigeLeerling();
                                 
+                                // Als de waarde van willekeurige leerling niet -1is, dan moet ik zijn naam tonen 
                                 if(willekeurigeLln != -1)
                                 {
-
-                                    Console.WriteLine(NaamLeerling(willekeurigeLln));
+                                    // Roep de naam op van de leerling en toon deze op het scherm
+                                    Console.WriteLine($"Volgende leerling moet naar voor komen: {NaamLeerling(willekeurigeLln)}");
 
                                     Console.WriteLine(StandaardAntwoorden(0));
                                     Console.ReadKey();
@@ -184,8 +204,8 @@ namespace Array_Oef6_2lagen
                                     // Scherm leegmaken 
                                     Console.Clear();
 
-                                    //stel vraag
-                                    Console.WriteLine("Is de leerling aanbod gekomen?");
+                                    //stel vraag of de leerling effectief naar voren is gekomen.
+                                    Console.WriteLine("Is de leerling aanbod gekomen? (J/N)");
                                     string antwoord = Console.ReadLine();
 
 
@@ -204,6 +224,8 @@ namespace Array_Oef6_2lagen
                                     Console.ReadKey();
                                 }
                             }
+
+                            // alle leerlingen tonen in 2 groepen
                             else if (keuze == 2)
                             {
                                 Console.WriteLine(ToonleerlingInGroep());
@@ -264,7 +286,7 @@ namespace Array_Oef6_2lagen
 
         //Functies
         /// <summary>
-        /// checks if the array alread has some space in it
+        /// checks if the array already has some room in it
         /// </summary>
         /// <returns> false: array has not been altered , True: Array has been altered </returns>
         static public bool ArrayAangemaakt()
@@ -313,6 +335,13 @@ namespace Array_Oef6_2lagen
         static public void LeerlingOpslaan(String naam, int nrIndex)
         {
             _leerlingen[nrIndex] = naam;
+
+            // Wanneer de naam null is, wil ik de leerling verwijderen en 
+            // moet ik dus ook zijn gegevens uit de andere array verwijderen.
+            if(naam == null)
+            {
+                _AanBeurtGeweest[nrIndex] = false;
+            }
         }
 
         // Toon alle leerlingen
@@ -322,7 +351,7 @@ namespace Array_Oef6_2lagen
 
             for (int i = 0; i < _leerlingen.Count(); i++)
             {
-
+                //Vergeet het + teken niet !!! anders maar 1 naam, vergeet ook de nieuwe lijn niet.
                 antwoord += $"{(i + 1).ToString()})  {_leerlingen[i]} \n";
 
             }
@@ -331,7 +360,7 @@ namespace Array_Oef6_2lagen
         }
 
         /// <summary>
-        /// choose a radom student
+        /// choose a random student
         /// </summary>
         /// <returns></returns>
         static public int KiesWillekeurigeLeerling()
@@ -341,7 +370,7 @@ namespace Array_Oef6_2lagen
 
             int index = -1;
 
-            // kijk of er nog iemand aan beurd moet komen
+            // kijk of er nog iemand aan beurt moet komen
             for (int i = 0; i < _leerlingen.Count(); i++)
             {
                 if (_AanBeurtGeweest[i] == false && _leerlingen[i] != null)
@@ -361,6 +390,9 @@ namespace Array_Oef6_2lagen
                 {
                     index = rdm.Next(_leerlingen.Count());
 
+                    // Kijk of de leerling aan alle voorwaarden voldoet
+                    // 1: hij moet nog aan beurt komen (dus _aanbeurtGeweest op false)
+                    // 2: er moet een naam zijn ingevuld, anders is het een lege plek
                     if (_AanBeurtGeweest[index] == false && _leerlingen[index] != null)
                     {
                         herhalen = false;
@@ -380,7 +412,9 @@ namespace Array_Oef6_2lagen
         // toon naam leerling
         static public string NaamLeerling(int ontvIndex)
         {
-            String antwoord = _leerlingen[ontvIndex];
+            String antwoord = null;
+                
+            antwoord= _leerlingen[ontvIndex];
 
             return antwoord;
         }
@@ -476,7 +510,7 @@ namespace Array_Oef6_2lagen
             {
                 antwoord = "de grootte van de array werd aangepast";
             }
-            else if (code == 10)
+            else if (code == 11)
             {
                 antwoord = "Alle leerlingen zijn aanbod gekomen.";
             }
